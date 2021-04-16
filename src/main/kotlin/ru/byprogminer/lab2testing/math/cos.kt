@@ -4,6 +4,7 @@ import ru.byprogminer.lab2testing.util.powMinusOne
 import ru.byprogminer.lab2testing.util.sumWithPrecision
 import kotlin.math.PI
 import kotlin.math.abs
+import kotlin.math.absoluteValue
 import kotlin.math.floor
 
 
@@ -16,6 +17,10 @@ private fun doCos(precision: Double) = { x: Double -> (0..Int.MAX_VALUE).asSeque
     .map { n -> powMinusOne(n) * cosProd(x, n) }.sumWithPrecision(precision) }
 
 fun cos(precision: Double): MathFunction = { x ->
-    x.let(::abs).let { it - floor(it / PI2) * PI2 }
-        .let(doCos(precision))
+    when {
+        (x - PI / 2).absoluteValue < precision -> .0
+        (x + PI / 2).absoluteValue < precision -> .0
+        else -> x.let(::abs).let { it - floor(it / PI2) * PI2 }
+            .let(doCos(precision))
+    }
 }
