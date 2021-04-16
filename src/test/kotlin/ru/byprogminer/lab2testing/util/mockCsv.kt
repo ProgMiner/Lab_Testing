@@ -34,5 +34,5 @@ fun BasedMathFunction.mockCsv(filename: String) = readCsvResource(filename)
             throw IllegalArgumentException("Invalid amount of columns in: $line")
         }
 
-        every { this@mockCsv(line[0], line[1]) } returns line[2]
+        every { this@mockCsv(line[0], match { it.toDouble() == line[1] }) } returns line[2]
     }

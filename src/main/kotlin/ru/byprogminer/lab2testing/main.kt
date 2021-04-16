@@ -80,6 +80,7 @@ fun main(args: Array<String>) {
         Files.newBufferedWriter(
             Paths.get(filename),
             StandardOpenOption.CREATE,
+            StandardOpenOption.TRUNCATE_EXISTING,
             StandardOpenOption.WRITE
         )
     } catch (e: IOException) {
