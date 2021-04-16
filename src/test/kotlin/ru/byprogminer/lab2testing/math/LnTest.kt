@@ -23,6 +23,6 @@ class LnTest {
     @CsvFileSource(resources = ["ln.csv"])
     fun testUnit(x: Double, y: Double) = when {
         y.isFinite() -> testPoint(y, x, PRECISION, DELTA, f = real)
-        else -> Assertions.assertEquals(y, real(x), PRECISION, "f($x) ≠ $y")
+        else -> Assertions.assertEquals(y, real(x), PRECISION, "ln($x) ≠ $y")
     }
 }
