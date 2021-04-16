@@ -17,10 +17,11 @@ private fun doCos(precision: Double) = { x: Double -> (0..Int.MAX_VALUE).asSeque
     .map { n -> powMinusOne(n) * cosProd(x, n) }.sumWithPrecision(precision) }
 
 fun cos(precision: Double): MathFunction = { x ->
-    when {
-        (x - PI / 2).absoluteValue < precision -> .0
-        (x + PI / 2).absoluteValue < precision -> .0
-        else -> x.let(::abs).let { it - floor(it / PI2) * PI2 }
-            .let(doCos(precision))
+    x.let(::abs).let { it - floor(it / PI2) * PI2 }.let {
+        when {
+            (it - PI / 2).absoluteValue < precision -> .0
+            (it - 3 * PI / 2).absoluteValue < precision -> .0
+            else -> it.let(doCos(precision))
+        }
     }
 }
