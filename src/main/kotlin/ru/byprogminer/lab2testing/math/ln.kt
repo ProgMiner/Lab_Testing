@@ -1,25 +1,21 @@
 package ru.byprogminer.lab2testing.math
 
-import ru.byprogminer.lab2testing.util.powMinusOne
 import ru.byprogminer.lab2testing.util.sumWithPrecision
-import kotlin.math.pow
 
 
-private fun lnTail(x: Double, precision: Double): Double = -(1..Int.MAX_VALUE).asSequence()
-    .map { k -> powMinusOne(k) * (x - 1).pow(k) / k }.sumWithPrecision(precision)
-
-private fun lnRecursive(x: Double, precision: Double): Double =
-    doLn(x - 1, precision) - (1..Int.MAX_VALUE).asSequence()
-        .map { k -> powMinusOne(k) * (x - 1).pow(-k) / k }
-        .sumWithPrecision(precision)
-
-private fun doLn(x: Double, precision: Double): Double = when {
-    x < 0 -> Double.NaN
-    x == .0 -> Double.NEGATIVE_INFINITY
-    x > 2 -> lnRecursive(x, precision)
-    else -> lnTail(x, precision)
-}
-
+// https://en.wikipedia.org/wiki/Logarithm#Calculation
 fun ln(precision: Double): MathFunction = { x ->
-    doLn(x, precision)
+    when {
+        x < 0 -> Double.NaN
+        x == .0 -> Double.NEGATIVE_INFINITY
+        else -> {
+            val z = (x - 1) / (x + 1)
+            val sqr = z * z
+
+            val kSeq = generateSequence(z) { it * sqr }
+            val iSeq = generateSequence(1) { it + 2 }
+
+            2 * kSeq.zip(iSeq) { k, i -> k / i }.sumWithPrecision(precision)
+        }
+    }
 }
