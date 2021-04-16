@@ -10,6 +10,7 @@ import org.junit.jupiter.params.provider.CsvFileSource
 import ru.byprogminer.lab2testing.util.mockCsv
 import ru.byprogminer.lab2testing.util.testPoint
 
+
 @ExtendWith(MockKExtension::class)
 class SecTest {
 

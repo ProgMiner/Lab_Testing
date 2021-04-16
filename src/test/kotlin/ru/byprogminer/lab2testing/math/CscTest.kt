@@ -10,6 +10,7 @@ import org.junit.jupiter.params.provider.CsvFileSource
 import ru.byprogminer.lab2testing.util.mockCsv
 import ru.byprogminer.lab2testing.util.testPoint
 
+
 @ExtendWith(MockKExtension::class)
 class CscTest {
 
@@ -23,7 +24,7 @@ class CscTest {
     private lateinit var sinMock: MathFunction
 
     @BeforeEach
-    fun initCosMock() = sinMock.mockCsv("sin.csv")
+    fun initSinMock() = sinMock.mockCsv("sin.csv")
 
     @ParameterizedTest(name = "Test csc({0} rad) = {1}")
     @CsvFileSource(resources = ["csc.csv"])

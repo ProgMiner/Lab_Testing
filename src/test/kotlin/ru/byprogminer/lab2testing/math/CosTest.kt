@@ -6,6 +6,7 @@ import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.CsvFileSource
 import ru.byprogminer.lab2testing.util.testPoint
 
+
 @ExtendWith(MockKExtension::class)
 class CosTest {
 

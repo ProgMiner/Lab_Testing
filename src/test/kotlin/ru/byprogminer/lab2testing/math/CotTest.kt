@@ -12,7 +12,7 @@ import ru.byprogminer.lab2testing.util.testPoint
 
 
 @ExtendWith(MockKExtension::class)
-class SinTest {
+class CotTest {
 
     companion object {
 
@@ -23,16 +23,25 @@ class SinTest {
     @MockK
     private lateinit var cosMock: MathFunction
 
+    @MockK
+    private lateinit var sinMock: MathFunction
+
     @BeforeEach
     fun initCosMock() = cosMock.mockCsv("cos.csv")
 
-    @ParameterizedTest(name = "Test sin({0} rad) = {1}")
-    @CsvFileSource(resources = ["sin.csv"])
-    fun testUnit(x: Double, y: Double) =
-        assertEquals(y, sin(cosMock)(x), PRECISION)
+    @BeforeEach
+    fun initSinMock() = sinMock.mockCsv("sin.csv")
 
-    @ParameterizedTest(name = "Test sin({0} rad) = {1}")
-    @CsvFileSource(resources = ["sin.csv"])
-    fun testFull(x: Double, y: Double) =
-        testPoint(y, x, PRECISION, DELTA, sin(cos(PRECISION)))
+    @ParameterizedTest(name = "Test cot({0} rad) = {1}")
+    @CsvFileSource(resources = ["cot.csv"])
+    fun testUnit(x: Double, y: Double) =
+        assertEquals(y, cot(sinMock, cosMock)(x), PRECISION)
+
+    @ParameterizedTest(name = "Test cot({0} rad) = {1}")
+    @CsvFileSource(resources = ["cot.csv"])
+    fun testFull(x: Double, y: Double) {
+        val cos = cos(PRECISION)
+
+        testPoint(y, x, PRECISION, DELTA, cot(sin(cos), cos))
+    }
 }

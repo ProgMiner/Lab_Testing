@@ -21,7 +21,11 @@ fun MathFunction.mockCsv(filename: String) = readCsvResource(filename)
             throw IllegalArgumentException("Invalid amount of columns in: $line")
         }
 
-        every { this@mockCsv(line[0]) } returns line[1]
+        every {
+            hint(Double::class) // https://github.com/mockk/mockk/issues/492
+
+            this@mockCsv(line[0])
+        } returns line[1]
     }
 
 fun BasedMathFunction.mockCsv(filename: String) = readCsvResource(filename)
