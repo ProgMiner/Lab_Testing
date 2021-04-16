@@ -11,7 +11,7 @@ import ru.byprogminer.lab2testing.util.mockCsv
 import ru.byprogminer.lab2testing.util.testPoint
 
 @ExtendWith(MockKExtension::class)
-class SecTest {
+class SinTest {
 
     companion object {
 
@@ -25,13 +25,13 @@ class SecTest {
     @BeforeEach
     fun initCosMock() = cosMock.mockCsv("cos.csv")
 
-    @ParameterizedTest(name = "Test sec({0} rad) = {1}")
-    @CsvFileSource(resources = ["sec.csv"])
+    @ParameterizedTest(name = "Test sin({0} rad) = {1}")
+    @CsvFileSource(resources = ["sin.csv"])
     fun testUnit(x: Double, y: Double) =
-        assertEquals(y, sec(cosMock)(x), PRECISION)
+        assertEquals(y, sin(cosMock)(x), PRECISION)
 
-    @ParameterizedTest(name = "Test sec({0} rad) = {1}")
-    @CsvFileSource(resources = ["sec.csv"])
+    @ParameterizedTest(name = "Test sin({0} rad) = {1}")
+    @CsvFileSource(resources = ["sin.csv"])
     fun testFull(x: Double, y: Double) =
-        testPoint(y, x, PRECISION, DELTA, sec(cos(PRECISION)))
+        testPoint(y, x, PRECISION, DELTA, sin(cos(PRECISION)))
 }

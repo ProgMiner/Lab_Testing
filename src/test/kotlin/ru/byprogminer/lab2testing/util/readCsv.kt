@@ -6,21 +6,27 @@ import java.util.*
 private data class CsvParser(
     val current: String,
     val result: List<String>,
-    val quote: Int,
-)
+    val quote: Quote,
+) {
+
+    enum class Quote {
+
+        NORMAL, QUOTE, Q_QUOTE
+    }
+}
 
 private fun parseLine(line: String): List<String>? {
-    val (current, result, quotes) = line.fold(CsvParser("", emptyList(), 0)) { parser, c ->
+    val (current, result, quotes) = line.fold(CsvParser("", emptyList(), CsvParser.Quote.NORMAL)) { parser, c ->
         when (parser.quote) {
-            0 -> when (c) {
-                '"' -> parser.copy(quote = 1)
+            CsvParser.Quote.NORMAL -> when (c) {
+                '"' -> parser.copy(quote = CsvParser.Quote.QUOTE)
                 ',' -> parser.copy(current = "", result = parser.result + parser.current)
                 else -> parser.copy(current = parser.current + c)
             }
 
-            1 -> if (c == '"') {
+            CsvParser.Quote.QUOTE -> if (c == '"') {
                 // When quote in quotes
-                parser.copy(quote = 2)
+                parser.copy(quote = CsvParser.Quote.Q_QUOTE)
             } else {
                 parser.copy(current = parser.current + c)
             }
@@ -28,16 +34,14 @@ private fun parseLine(line: String): List<String>? {
             // When after quote in quotes arrived:
             //   - another one quote: just print quote
             //   - otherwise: close quotes
-            2 -> parser.copy(
+            CsvParser.Quote.Q_QUOTE -> parser.copy(
                 current = parser.current + c,
-                quote = if (c == '"') 1 else 0
+                quote = if (c == '"') CsvParser.Quote.QUOTE else CsvParser.Quote.NORMAL
             )
-
-            else -> throw IllegalStateException()
         }
     }
 
-    return if (quotes in arrayOf(0, 2)) result + current else null
+    return if (quotes in arrayOf(CsvParser.Quote.NORMAL, CsvParser.Quote.Q_QUOTE)) result + current else null
 }
 
 fun readCsv(scanner: Scanner) =

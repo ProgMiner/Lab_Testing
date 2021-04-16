@@ -4,14 +4,13 @@ import java.io.IOException
 import java.io.Writer
 
 
-private fun prepareValue(value: String): String {
-    val ret = value.replace("\"", "\"\"")
+private val badChars = arrayOf(' ', ',', '"')
 
-    if (sequenceOf(' ', ',', '"').any(value::contains)) {
-        return "\"$ret\""
+private fun prepareValue(value: String): String = value.replace("\"", "\"\"").let { ret ->
+    when {
+        value.any { it in badChars } -> "\"$ret\""
+        else -> ret
     }
-
-    return ret
 }
 
 @Throws(IOException::class)
