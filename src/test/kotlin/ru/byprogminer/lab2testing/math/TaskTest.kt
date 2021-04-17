@@ -22,25 +22,43 @@ class TaskTest {
     }
 
     @MockK
+    private lateinit var cosMock: MathFunction
+
+    @MockK
     private lateinit var secMock: MathFunction
 
     @MockK
-    private lateinit var cotMock: MathFunction
+    private lateinit var sinMock: MathFunction
 
     @MockK
     private lateinit var cscMock: MathFunction
 
     @MockK
+    private lateinit var cotMock: MathFunction
+
+    @MockK
+    private lateinit var lnMock: MathFunction
+
+    @MockK
     private lateinit var logMock: BasedMathFunction
+
+    @BeforeEach
+    fun initCosMock() = cosMock.mockCsv("cos.csv")
 
     @BeforeEach
     fun initSecMock() = secMock.mockCsv("sec.csv")
 
     @BeforeEach
-    fun initCotMock() = cotMock.mockCsv("cot.csv")
+    fun initSinMock() = sinMock.mockCsv("sin.csv")
 
     @BeforeEach
     fun initCscMock() = cscMock.mockCsv("csc.csv")
+
+    @BeforeEach
+    fun initCotMock() = cotMock.mockCsv("cot.csv")
+
+    @BeforeEach
+    fun initLnMock() = lnMock.mockCsv("ln.csv")
 
     @BeforeEach
     fun initLogMock() = logMock.mockCsv("log.csv")
@@ -49,6 +67,103 @@ class TaskTest {
     @CsvFileSource(resources = ["task.csv"])
     fun testUnit(x: Double, y: Double) =
         assertEquals(y, task(secMock, cotMock, cscMock, logMock)(x), EPSILON)
+
+    @ParameterizedTest(name = "Test task({0}) = {1}")
+    @CsvFileSource(resources = ["task.csv"])
+    fun testWithCosMock(x: Double, y: Double) {
+        val ln = ln(PRECISION)
+
+        val sec = sec(cosMock)
+        val sin = sin(cosMock)
+        val csc = csc(sin)
+        val cot = cot(sin, cosMock)
+        val log = log(ln)
+
+        assertEquals(y, task(sec, cot, csc, log)(x), EPSILON)
+    }
+
+    @ParameterizedTest(name = "Test task({0}) = {1}")
+    @CsvFileSource(resources = ["task.csv"])
+    fun testWithSecMock(x: Double, y: Double) {
+        val cos = cos(PRECISION)
+        val ln = ln(PRECISION)
+
+        val sin = sin(cos)
+        val csc = csc(sin)
+        val cot = cot(sin, cos)
+        val log = log(ln)
+
+        assertEquals(y, task(secMock, cot, csc, log)(x), EPSILON)
+    }
+
+    @ParameterizedTest(name = "Test task({0}) = {1}")
+    @CsvFileSource(resources = ["task.csv"])
+    fun testWithSinMock(x: Double, y: Double) {
+        val cos = cos(PRECISION)
+        val ln = ln(PRECISION)
+
+        val sec = sec(cos)
+        val csc = csc(sinMock)
+        val cot = cot(sinMock, cos)
+        val log = log(ln)
+
+        assertEquals(y, task(sec, cot, csc, log)(x), EPSILON)
+    }
+
+    @ParameterizedTest(name = "Test task({0}) = {1}")
+    @CsvFileSource(resources = ["task.csv"])
+    fun testWithCscMock(x: Double, y: Double) {
+        val cos = cos(PRECISION)
+        val ln = ln(PRECISION)
+
+        val sec = sec(cos)
+        val sin = sin(cos)
+        val cot = cot(sin, cos)
+        val log = log(ln)
+
+        assertEquals(y, task(sec, cot, cscMock, log)(x), EPSILON)
+    }
+
+    @ParameterizedTest(name = "Test task({0}) = {1}")
+    @CsvFileSource(resources = ["task.csv"])
+    fun testWithCotMock(x: Double, y: Double) {
+        val cos = cos(PRECISION)
+        val ln = ln(PRECISION)
+
+        val sec = sec(cos)
+        val sin = sin(cos)
+        val csc = csc(sin)
+        val log = log(ln)
+
+        assertEquals(y, task(sec, cotMock, csc, log)(x), EPSILON)
+    }
+
+    @ParameterizedTest(name = "Test task({0}) = {1}")
+    @CsvFileSource(resources = ["task.csv"])
+    fun testWithLnMock(x: Double, y: Double) {
+        val cos = cos(PRECISION)
+
+        val sec = sec(cos)
+        val sin = sin(cos)
+        val csc = csc(sin)
+        val cot = cot(sin, cos)
+        val log = log(lnMock)
+
+        assertEquals(y, task(sec, cot, csc, log)(x), EPSILON)
+    }
+
+    @ParameterizedTest(name = "Test task({0}) = {1}")
+    @CsvFileSource(resources = ["task.csv"])
+    fun testWithLogMock(x: Double, y: Double) {
+        val cos = cos(PRECISION)
+
+        val sec = sec(cos)
+        val sin = sin(cos)
+        val csc = csc(sin)
+        val cot = cot(sin, cos)
+
+        assertEquals(y, task(sec, cot, csc, logMock)(x), EPSILON)
+    }
 
     @ParameterizedTest(name = "Test task({0}) = {1}")
     @CsvFileSource(resources = ["task.csv"])
