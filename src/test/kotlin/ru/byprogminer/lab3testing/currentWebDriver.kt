@@ -5,9 +5,14 @@ import io.github.bonigarcia.wdm.config.DriverManagerType
 import org.openqa.selenium.WebDriver
 
 
+val baseUrl: String by lazy {
+    System.getProperty("ru.byprogminer.lab3testing.baseUrl")
+        ?: throw IllegalStateException("base URL is not specified")
+}
+
 val currentWebDriverName: String by lazy {
     System.getProperty("ru.byprogminer.lab3testing.webdriver")
-        ?: throw IllegalStateException("Current web driver is not specified")
+        ?: throw IllegalStateException("current web driver is not specified")
 }
 
 val currentWebDriverManagerType by lazy {
@@ -21,11 +26,11 @@ val currentWebDriverClass: Class<*> by lazy {
 fun setupCurrentWebDriver() = currentWebDriverManagerType
     .let(WebDriverManager::getInstance).setup()
 
-fun getCurrentWebDriver(url: String): WebDriver {
+fun getCurrentWebDriver(pageUrl: String): WebDriver {
     val driver = currentWebDriverClass.newInstance() as WebDriver
 
     driver.manage().window().maximize()
-    driver.get(url)
+    driver.get(baseUrl + pageUrl)
 
     return driver
 }
