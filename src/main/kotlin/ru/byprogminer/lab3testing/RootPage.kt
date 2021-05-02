@@ -402,4 +402,79 @@ class RootPage(driver: WebDriver): PageObject(driver) {
 
         fun clickSubmitButton() = submitButton.click()
     }
+
+    class EtrainTab(driver: WebDriver): PageObject(driver) {
+
+        @FindBy(xpath = "/html/body/div[3]/div[1]/div[5]/div/div[4]/div[1]/form/div/div/div[1]/div/div[1]/div[1]/input")
+        private lateinit var cityFromField: WebElement
+
+        @FindBy(xpath = "/html/body/div[3]/div[1]/div[5]/div/div[4]/div[1]/form/div/div/div[1]/div/div[1]/div[2]")
+        private lateinit var cityFromDropdown: WebElement
+
+        @FindBy(xpath = "/html/body/div[3]/div[1]/div[5]/div/div[4]/div[1]/form/div/div/div[1]/div/div[2]/span/span")
+        private lateinit var cityFromRecommendationButton: WebElement
+
+        @FindBy(xpath = "/html/body/div[3]/div[1]/div[5]/div/div[4]/div[1]/form/div/div/div[2]/div")
+        private lateinit var cityExchangeButton: WebElement
+
+        @FindBy(xpath = "/html/body/div[3]/div[1]/div[5]/div/div[4]/div[1]/form/div/div/div[3]/div/div[1]/div[1]/input")
+        private lateinit var cityToField: WebElement
+
+        @FindBy(xpath = "/html/body/div[3]/div[1]/div[5]/div/div[4]/div[1]/form/div/div/div[3]/div/div[1]/div[2]")
+        private lateinit var cityToDropdown: WebElement
+
+        @FindBy(xpath = "/html/body/div[3]/div[1]/div[5]/div/div[4]/div[1]/form/div/div/div[3]/div/div[2]/span/span")
+        private lateinit var cityToRecommendationButton: WebElement
+
+        @FindBy(xpath = "/html/body/div[3]/div[1]/div[5]/div/div[4]/div[1]/form/div/div/div[4]/div/div/div/input")
+        private lateinit var dateFromField: WebElement
+
+        @FindBy(xpath = "/html/body/div[3]/div[1]/div[5]/div/div[4]/div[1]/form/div/div/div[4]/div/div/button[1]")
+        private lateinit var dateFromDecreaseButton: WebElement
+
+        @FindBy(xpath = "/html/body/div[3]/div[1]/div[5]/div/div[4]/div[1]/form/div/div/div[4]/div/div/button[2]")
+        private lateinit var dateFromIncreaseButton: WebElement
+
+        @FindBy(xpath = "/html/body/div[5]")
+        private lateinit var dateFromCalendar: WebElement
+
+        @FindBy(xpath = "/html/body/div[3]/div[1]/div[5]/div/div[4]/div[1]/form/div/div/div[5]/button")
+        private lateinit var submitButton: WebElement
+
+        var cityFrom: String
+            get() = cityFromField.getAttribute("value")
+            set(value) = cityFromField.sendKeys(value)
+
+        val isCityFromDropdownVisible: Boolean get() = cityFromDropdown.isDisplayed
+
+        val cityFromRecommendation: String get() = cityFromRecommendationButton.text
+
+        var cityTo: String
+            get() = cityToField.getAttribute("value")
+            set(value) = cityToField.sendKeys(value)
+
+        val isCityToDropdownVisible: Boolean get() = cityToDropdown.isDisplayed
+
+        val cityToRecommendation: String get() = cityToRecommendationButton.text
+
+        var dateFrom: String
+            get() = dateFromField.getAttribute("value")
+            set(value) = dateFromField.sendKeys(value)
+
+        val isDateFromCalendarVisible: Boolean get() = dateFromCalendar.isDisplayed
+
+        fun clickCityFromRecommendationButton() = cityFromRecommendationButton.click()
+
+        fun clickCityToRecommendationButton() = cityToRecommendationButton.click()
+
+        fun clickCityExchangeButton() = cityExchangeButton.click()
+
+        fun clickDateFromField() = dateFromField.click()
+
+        fun clickDateFromDecreaseButton() = dateFromDecreaseButton.click()
+
+        fun clickDateFromIncreaseButton() = dateFromIncreaseButton.click()
+
+        fun clickSubmitButton() = submitButton.click()
+    }
 }

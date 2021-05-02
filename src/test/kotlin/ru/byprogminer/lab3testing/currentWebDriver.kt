@@ -38,7 +38,7 @@ fun setupCurrentWebDriver() = currentWebDriverManagerType
 fun getCurrentWebDriver(pageUrl: String): WebDriver {
     val driver = currentWebDriverClass.newInstance()
 
-    driver.manage().timeouts().pageLoadTimeout(10, TimeUnit.SECONDS)
+    driver.manage().timeouts().pageLoadTimeout(15, TimeUnit.SECONDS)
     driver.manage().window().maximize()
 
     try {
@@ -47,7 +47,7 @@ fun getCurrentWebDriver(pageUrl: String): WebDriver {
         (driver as JavascriptExecutor).executeScript("window.stop()")
     }
 
-    driver.manage().timeouts().pageLoadTimeout(30, TimeUnit.SECONDS)
+    driver.manage().timeouts().pageLoadTimeout(45, TimeUnit.SECONDS)
     return driver
 }
 
