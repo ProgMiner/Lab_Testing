@@ -1,5 +1,6 @@
 package ru.byprogminer.lab3testing
 
+import org.openqa.selenium.NoSuchElementException
 import org.openqa.selenium.WebDriver
 import org.openqa.selenium.WebElement
 import org.openqa.selenium.support.FindBy
@@ -312,6 +313,92 @@ class RootPage(driver: WebDriver): PageObject(driver) {
         fun clickDateToAddButton() = dateToAddButton.click()
 
         fun clickDateToRemoveButton() = dateToRemoveButton.click()
+
+        fun clickSubmitButton() = submitButton.click()
+    }
+
+    class BusTab(driver: WebDriver): PageObject(driver) {
+
+        @FindBy(xpath = "/html/body/div[3]/div[1]/div[5]/div/div[3]/div/div/div/div[1]/div/span/div/div/input")
+        private lateinit var cityFromField: WebElement
+
+        @FindBy(xpath = "/html/body/div[3]/div[1]/div[5]/div/div[3]/div/div/div/div[1]/div/span/div[2]")
+        private lateinit var cityFromDropdown: WebElement
+
+        @FindBy(xpath = "/html/body/div[3]/div[1]/div[5]/div/div[3]/div/div/div/div[1]/span/div[1]/span")
+        private lateinit var cityFromRecommendationButton: WebElement
+
+        @FindBy(xpath = "/html/body/div[3]/div[1]/div[5]/div/div[3]/div/div/div/div[1]/div/span/div/div/div/div/button")
+        private lateinit var cityExchangeButton: WebElement
+
+        @FindBy(xpath = "/html/body/div[3]/div[1]/div[5]/div/div[3]/div/div/div/div[2]/div/span/div/div/input")
+        private lateinit var cityToField: WebElement
+
+        @FindBy(xpath = "/html/body/div[3]/div[1]/div[5]/div/div[3]/div/div/div/div[2]/div/span/div[2]")
+        private lateinit var cityToDropdown: WebElement
+
+        @FindBy(xpath = "/html/body/div[3]/div[1]/div[5]/div/div[3]/div/div/div/div[2]/span/div[1]/span")
+        private lateinit var cityToRecommendationButton: WebElement
+
+        @FindBy(xpath = "/html/body/div[3]/div[1]/div[5]/div/div[3]/div/div/div/div[3]/div/div/div/input")
+        private lateinit var dateFromField: WebElement
+
+        @FindBy(xpath = "/html/body//div[@data-ti='order-popper-container']")
+        private lateinit var dateFromCalendar: WebElement
+
+        @FindBy(xpath = "/html/body/div[3]/div[1]/div[5]/div/div[3]/div/div/div/div[3]/span/div[1]/span")
+        private lateinit var dateFromRecommendationButton: WebElement
+
+        @FindBy(xpath = "/html/body/div[3]/div[1]/div[5]/div/div[3]/div/div/div/div[5]/div/button")
+        private lateinit var submitButton: WebElement
+
+        var cityFrom: String
+            get() = cityFromField.getAttribute("value")
+            set(value) = cityFromField.sendKeys(value)
+
+        val isCityFromDropdownVisible: Boolean get() = try {
+            cityFromDropdown.isDisplayed
+        } catch (_: NoSuchElementException) {
+            false
+        }
+
+        val cityFromRecommendation: String get() = cityFromRecommendationButton.text
+
+        var cityTo: String
+            get() = cityToField.getAttribute("value")
+            set(value) = cityToField.sendKeys(value)
+
+        val isCityToDropdownVisible: Boolean get() = try {
+            cityToDropdown.isDisplayed
+        } catch (_: NoSuchElementException) {
+            false
+        }
+
+        val cityToRecommendation: String get() = cityToRecommendationButton.text
+
+        var dateFrom: String
+            get() = dateFromField.getAttribute("value")
+            set(value) = dateFromField.sendKeys(value)
+
+        val isDateFromCalendarVisible: Boolean get() = try {
+            dateFromCalendar.isDisplayed
+        } catch (_: NoSuchElementException) {
+            false
+        }
+
+        fun clickCityFromField() = cityFromField.click()
+
+        fun clickCityFromRecommendationButton() = cityFromRecommendationButton.click()
+
+        fun clickCityToField() = cityToField.click()
+
+        fun clickCityToRecommendationButton() = cityToRecommendationButton.click()
+
+        fun clickCityExchangeButton() = cityExchangeButton.click()
+
+        fun clickDateFromField() = dateFromField.click()
+
+        fun clickDateFromRecommendationButton() = dateFromRecommendationButton.click()
 
         fun clickSubmitButton() = submitButton.click()
     }

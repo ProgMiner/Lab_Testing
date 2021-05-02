@@ -9,6 +9,7 @@ import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.EnumSource
 import org.junit.jupiter.params.provider.ValueSource
 import org.openqa.selenium.WebDriver
+import java.net.URLDecoder
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 
@@ -513,6 +514,198 @@ class RootPageTest {
                 trainsSchedulePage.headingText.contains(cityFrom) && trainsSchedulePage.headingText.contains(cityTo),
                 "schedule heading isn't correct"
             )
+        }
+    }
+
+    class BusTabTest {
+
+        companion object {
+
+            private val dateFormatter: DateTimeFormatter = DateTimeFormatter.ofPattern("dd.MM.YYYY")
+
+            @JvmStatic @BeforeAll
+            fun setupDriver() = setupCurrentWebDriver()
+        }
+
+        private lateinit var driver: WebDriver
+
+        private lateinit var rootPage: RootPage
+
+        private lateinit var busTab: RootPage.BusTab
+
+        @BeforeEach
+        fun initDriverAndPages() {
+            getCurrentWebDriver("/").initDriverAndPages(this)
+            rootPage.currentTab = RootPage.Tab.BUS
+            Thread.sleep(1000)
+        }
+
+        @AfterEach
+        fun finiDriver() = driver.quit()
+
+        @Test
+        fun `Test if input 2 chars of city from name, dropdown will be visible`() {
+            busTab.cityFrom = "мо"
+
+            Thread.sleep(1000)
+            assertTrue(busTab.isCityFromDropdownVisible, "city from dropdown isn't visible")
+        }
+
+        @Test
+        fun `Test if input bad 2 chars of city from name, dropdown will not be visible`() {
+            busTab.cityFrom = "цй"
+
+            Thread.sleep(1000)
+            assertFalse(busTab.isCityFromDropdownVisible, "city from dropdown is visible")
+        }
+
+        @Test
+        fun `Test if click city from field, dropdown will be visible`() {
+            busTab.clickCityFromField()
+
+            Thread.sleep(1000)
+            assertTrue(busTab.isCityFromDropdownVisible, "city from dropdown isn't visible")
+        }
+
+        @Test
+        fun `Test if click city from recommendation button, field will be filled with`() {
+            busTab.clickCityFromRecommendationButton()
+
+            Thread.sleep(100)
+            assertTrue(busTab.cityFrom.contains(busTab.cityFromRecommendation),
+                "city from isn't contains recommendation: ${busTab.cityFrom}")
+        }
+
+        @Test
+        fun `Test if input 2 chars of city to name, dropdown will be visible`() {
+            busTab.cityTo = "мо"
+
+            Thread.sleep(1000)
+            assertTrue(busTab.isCityToDropdownVisible, "city to dropdown isn't visible")
+        }
+
+        @Test
+        fun `Test if input bad 2 chars of city to name, dropdown will not be visible`() {
+            busTab.cityTo = "цй"
+
+            Thread.sleep(1000)
+            assertFalse(busTab.isCityToDropdownVisible, "city to dropdown is visible")
+        }
+
+        @Test
+        fun `Test if click city to field, dropdown will be visible`() {
+            busTab.clickCityToField()
+
+            Thread.sleep(1000)
+            assertTrue(busTab.isCityToDropdownVisible, "city to dropdown isn't visible")
+        }
+
+        @Test
+        fun `Test if click city to recommendation button, field will be filled with`() {
+            busTab.clickCityToRecommendationButton()
+
+            Thread.sleep(100)
+            assertTrue(busTab.cityTo.contains(busTab.cityToRecommendation),
+                "city to isn't contains recommendation: ${busTab.cityTo}")
+        }
+
+        @ParameterizedTest
+        @ValueSource(strings = [",", "Москва,", ",Санкт-Петербург", "Москва,Санкт-Петербург"])
+        fun `Test if exchange button clicked values exchanged`(values: String) {
+            val (from, to) = values.split(',')
+
+            busTab.cityFrom = from
+            Thread.sleep(1000)
+
+            busTab.cityTo = to
+            Thread.sleep(1000)
+
+            driver.removeCurrentFocus()
+
+            val actualFrom = busTab.cityFrom
+            val actualTo = busTab.cityTo
+
+            busTab.clickCityExchangeButton()
+            assertEquals(actualTo, busTab.cityFrom, "city from isn't exchanged")
+            assertEquals(actualFrom, busTab.cityTo, "city to isn't exchanged")
+        }
+
+        @Test
+        fun `Test on click on date from field calendar set visible`() {
+            busTab.clickDateFromField()
+
+            Thread.sleep(500)
+            assertTrue(busTab.isDateFromCalendarVisible, "date from calendar isn't visible")
+        }
+
+        @Test
+        fun `Test if click date from recommendation button, field will be filled`() {
+            busTab.clickDateFromRecommendationButton()
+
+            assertTrue(busTab.dateFrom.isNotBlank(), "date to isn't filled")
+        }
+
+        @Test
+        fun `Test form with city to and date from opens ticket list`() {
+            busTab.cityFrom = "Москва"
+
+            Thread.sleep(1000)
+            busTab.cityTo = "Санкт-Петербург"
+
+            Thread.sleep(1000)
+            busTab.dateFrom = dateFormatter.format(LocalDate.now())
+
+            val cityFrom = busTab.cityFrom
+            val cityTo = busTab.cityTo
+            val dateFrom = busTab.dateFrom
+
+            busTab.clickSubmitButton()
+            Thread.sleep(500)
+
+            val url = URLDecoder.decode(driver.currentUrl, "utf-8")
+            assertTrue(url.startsWith("https://bus.tutu.ru/расписание_автобусов/$cityFrom/$cityTo"),
+                "submit address isn't correct")
+
+            assertTrue(url.contains(dateFrom), "submit isn't contains date from")
+        }
+
+        @Test
+        fun `Test form with city to and without date from opens schedule`() {
+            busTab.cityFrom = "Москва"
+
+            Thread.sleep(1000)
+            busTab.cityTo = "Санкт-Петербург"
+
+            Thread.sleep(1000)
+            busTab.dateFrom = ""
+
+            val cityFrom = busTab.cityFrom
+            val cityTo = busTab.cityTo
+
+            busTab.clickSubmitButton()
+            Thread.sleep(500)
+
+            val url = URLDecoder.decode(driver.currentUrl, "utf-8")
+            assertEquals("https://bus.tutu.ru/расписание_автобусов/$cityFrom/$cityTo/", url,
+                "submit address isn't correct")
+        }
+
+        @Test
+        fun `Test form without city to and date from opens schedule`() {
+            busTab.cityFrom = "Москва"
+
+            Thread.sleep(1000)
+            busTab.cityTo = ""
+            busTab.dateFrom = ""
+
+            val cityFrom = busTab.cityFrom
+
+            busTab.clickSubmitButton()
+            Thread.sleep(500)
+
+            val url = URLDecoder.decode(driver.currentUrl, "utf-8")
+            assertEquals("https://bus.tutu.ru/расписание_автобусов/$cityFrom/", url,
+                "submit address isn't correct")
         }
     }
 }
