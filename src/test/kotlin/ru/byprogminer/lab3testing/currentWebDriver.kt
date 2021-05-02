@@ -2,7 +2,9 @@ package ru.byprogminer.lab3testing
 
 import io.github.bonigarcia.wdm.WebDriverManager
 import io.github.bonigarcia.wdm.config.DriverManagerType
+import org.openqa.selenium.JavascriptExecutor
 import org.openqa.selenium.WebDriver
+import java.util.concurrent.TimeUnit
 
 
 val baseUrl: String by lazy {
@@ -19,18 +21,31 @@ val currentWebDriverManagerType by lazy {
     DriverManagerType.valueOf(currentWebDriverName.toUpperCase())
 }
 
-val currentWebDriverClass: Class<*> by lazy {
-    Class.forName(currentWebDriverManagerType.browserClass())
+val currentWebDriverClass: Class<out WebDriver> by lazy {
+    val clazz = Class.forName(currentWebDriverManagerType.browserClass())
+
+    if (!WebDriver::class.java.isAssignableFrom(clazz)) {
+        throw IllegalStateException("not a web driver class is current: $currentWebDriverManagerType")
+    }
+
+    @Suppress("UNCHECKED_CAST")
+    return@lazy clazz as Class<out WebDriver>
 }
 
 fun setupCurrentWebDriver() = currentWebDriverManagerType
     .let(WebDriverManager::getInstance).setup()
 
 fun getCurrentWebDriver(pageUrl: String): WebDriver {
-    val driver = currentWebDriverClass.newInstance() as WebDriver
+    val driver = currentWebDriverClass.newInstance()
 
+    driver.manage().timeouts().pageLoadTimeout(10, TimeUnit.SECONDS)
     driver.manage().window().maximize()
-    driver.get(baseUrl + pageUrl)
+
+    try {
+        driver.get(baseUrl + pageUrl)
+    } catch (e: org.openqa.selenium.TimeoutException) {
+        (driver as JavascriptExecutor).executeScript("window.stop()")
+    }
 
     return driver
 }
@@ -47,4 +62,8 @@ fun WebDriver.initDriverAndPages(that: Any) = that.javaClass.declaredFields.forE
         field.isAccessible = true
         field.set(that, this)
     }
+}
+
+fun WebDriver.removeCurrentFocus() {
+    (this as JavascriptExecutor).executeScript("!!document.activeElement ? document.activeElement.blur() : 0")
 }
