@@ -258,4 +258,261 @@ class RootPageTest {
             assertTrue(driver.currentUrl.startsWith("https://avia.tutu.ru/"), "we aren't on avia search")
         }
     }
+
+    class TrainTabTest {
+
+        companion object {
+
+            private val dateFormatter: DateTimeFormatter = DateTimeFormatter.ofPattern("dd.MM.YYYY, EE")
+
+            @JvmStatic @BeforeAll
+            fun setupDriver() = setupCurrentWebDriver()
+        }
+
+        private lateinit var driver: WebDriver
+
+        private lateinit var rootPage: RootPage
+
+        private lateinit var trainTab: RootPage.TrainTab
+
+        private lateinit var trainsPage: TrainsPage
+
+        private lateinit var trainsSchedulePage: TrainsSchedulePage
+
+        @BeforeEach
+        fun initDriverAndPages() {
+            getCurrentWebDriver("/").initDriverAndPages(this)
+            rootPage.currentTab = RootPage.Tab.TRAIN
+            Thread.sleep(500)
+        }
+
+        @AfterEach
+        fun finiDriver() = driver.quit()
+
+        @Test
+        fun `Test if input 2 chars of city from name, dropdown will be visible`() {
+            trainTab.cityFrom = "мо"
+
+            Thread.sleep(1000)
+            assertTrue(trainTab.isCityFromDropdownVisible, "city from dropdown isn't visible")
+        }
+
+        @Test
+        fun `Test if input bad 2 chars of city from name, dropdown will not be visible`() {
+            trainTab.cityFrom = "цй"
+
+            Thread.sleep(1000)
+            assertFalse(trainTab.isCityFromDropdownVisible, "city from dropdown is visible")
+        }
+
+        @Test
+        fun `Test if input 2 chars of city from name and remove focus name will be completed`() {
+            trainTab.cityFrom = "мо"
+
+            Thread.sleep(1000)
+            driver.removeCurrentFocus()
+            assertNotEquals("мо", trainTab.cityFrom, "city from wasn't completed")
+        }
+
+        @Test
+        fun `Test if click city from button, dropdown will be visible`() {
+            trainTab.clickCityFromButton()
+
+            Thread.sleep(1000)
+            assertTrue(trainTab.isCityFromDropdownVisible, "city from dropdown isn't visible")
+        }
+
+        @Test
+        fun `Test if click city from recommendation button, field will be filled with`() {
+            trainTab.clickCityFromRecommendationButton()
+
+            assertTrue(trainTab.cityFrom.contains(trainTab.cityFromRecommendation),
+                "city from isn't contains recommendation")
+        }
+
+        @Test
+        fun `Test if input 2 chars of city to name, dropdown will be visible`() {
+            trainTab.cityTo = "мо"
+
+            Thread.sleep(1000)
+            assertTrue(trainTab.isCityToDropdownVisible, "city to dropdown isn't visible")
+        }
+
+        @Test
+        fun `Test if input bad 2 chars of city to name, dropdown will not be visible`() {
+            trainTab.cityTo = "цй"
+
+            Thread.sleep(1000)
+            assertFalse(trainTab.isCityToDropdownVisible, "city to dropdown is visible")
+        }
+
+        @Test
+        fun `Test if input 2 chars of city to name and remove focus name will be completed`() {
+            trainTab.cityTo = "сан"
+
+            Thread.sleep(1000)
+            driver.removeCurrentFocus()
+            assertNotEquals("сан", trainTab.cityTo, "city from wasn't completed")
+        }
+
+        @Test
+        fun `Test if click city to button, dropdown will be visible`() {
+            trainTab.clickCityToButton()
+
+            Thread.sleep(1000)
+            assertTrue(trainTab.isCityToDropdownVisible, "city to dropdown isn't visible")
+        }
+
+        @Test
+        fun `Test if click city to recommendation button, field will be filled with`() {
+            trainTab.clickCityToRecommendationButton()
+
+            assertTrue(trainTab.cityTo.contains(trainTab.cityToRecommendation),
+                "city to isn't contains recommendation")
+        }
+
+        @ParameterizedTest
+        @ValueSource(strings = [",", "мо,", ",сан", "мо,сан"])
+        fun `Test if exchange button clicked values exchanged`(values: String) {
+            val (from, to) = values.split(',')
+
+            trainTab.cityFrom = from
+            Thread.sleep(1000)
+
+            trainTab.cityTo = to
+            Thread.sleep(1000)
+
+            driver.removeCurrentFocus()
+
+            val actualFrom = trainTab.cityFrom
+            val actualTo = trainTab.cityTo
+
+            trainTab.clickCityExchangeButton()
+            assertEquals(actualTo, trainTab.cityFrom, "city from isn't exchanged")
+            assertEquals(actualFrom, trainTab.cityTo, "city to isn't exchanged")
+        }
+
+        @Test
+        fun `Test on click on date from field calendar set visible`() {
+            trainTab.clickDateFromField()
+
+            assertTrue(trainTab.isDateFromCalendarVisible, "date from calendar isn't visible")
+        }
+
+        @Test
+        fun `Test if click date from recommendation button, field will be filled`() {
+            trainTab.clickDateFromRecommendationButton()
+
+            assertTrue(trainTab.dateFrom.isNotBlank(), "date to isn't filled")
+        }
+
+        @Test
+        fun `Test if click date from decrease button, field will be filled with yesterday date`() {
+            trainTab.clickDateFromDecreaseButton()
+
+            assertEquals(dateFormatter.format(LocalDate.now().minusDays(1)).toLowerCase(),
+                trainTab.dateFrom, "date to isn't filled correctly")
+        }
+
+        @Test
+        fun `Test if click date from decrease button N times, field will be filled with date of today minus N`() {
+            val n = 4L
+
+            for (i in 0 until n) {
+                trainTab.clickDateFromDecreaseButton()
+            }
+
+            assertEquals(dateFormatter.format(LocalDate.now().minusDays(n)).toLowerCase(),
+                trainTab.dateFrom, "date to isn't filled correctly")
+        }
+
+        @Test
+        fun `Test if click date from increase button, field will be filled with tomorrow date`() {
+            trainTab.clickDateFromIncreaseButton()
+
+            assertEquals(dateFormatter.format(LocalDate.now().plusDays(1)).toLowerCase(),
+                trainTab.dateFrom, "date to isn't filled correctly")
+        }
+
+        @Test
+        fun `Test if click date from increase button N times, field will be filled with date of today plus N`() {
+            val n = 4L
+
+            for (i in 0 until n) {
+                trainTab.clickDateFromIncreaseButton()
+            }
+
+            assertEquals(dateFormatter.format(LocalDate.now().plusDays(n)).toLowerCase(),
+                trainTab.dateFrom, "date to isn't filled correctly")
+        }
+
+        @Test
+        fun `Test if click date to add button, date to field will be visible`() {
+            trainTab.clickDateToAddButton()
+
+            assertTrue(trainTab.isDateToVisible, "date to field isn't visible")
+        }
+
+        @Test
+        fun `Test if click date to remove button, date to field will be hidden`() {
+            trainTab.clickDateToAddButton()
+
+            assertTrue(trainTab.isDateToVisible, "date to field isn't visible")
+            trainTab.clickDateToRemoveButton()
+
+            assertFalse(trainTab.isDateToVisible, "date to field is visible")
+        }
+
+        @Test
+        fun `Test form with date from opens ticket list`() {
+            trainTab.cityFrom = "мо"
+
+            Thread.sleep(1000)
+            trainTab.cityTo = "сан"
+
+            Thread.sleep(1000)
+            trainTab.dateFrom = dateFormatter.format(LocalDate.now())
+
+            val cityFrom = trainTab.cityFrom
+            val cityTo = trainTab.cityTo
+            val dateFrom = trainTab.dateFrom
+
+            trainTab.clickSubmitButton()
+            Thread.sleep(500)
+
+            assertEquals(cityFrom, trainsPage.cityFrom, "city from isn't correct")
+            assertEquals(cityTo, trainsPage.cityTo, "city to isn't correct")
+            assertEquals(dateFrom, trainsPage.dateFrom, "date from isn't correct")
+
+            assertTrue(
+                trainsPage.headingText.contains(cityFrom) && trainsPage.headingText.contains(cityTo),
+                "schedule heading isn't correct"
+            )
+        }
+
+        @Test
+        fun `Test form without date from opens schedule`() {
+            trainTab.cityFrom = "мо"
+
+            Thread.sleep(1000)
+            trainTab.cityTo = "сан"
+
+            Thread.sleep(1000)
+            trainTab.dateFrom = ""
+
+            val cityFrom = trainTab.cityFrom
+            val cityTo = trainTab.cityTo
+
+            trainTab.clickSubmitButton()
+            Thread.sleep(500)
+
+            assertEquals(cityFrom, trainsSchedulePage.cityFrom, "city from isn't correct")
+            assertEquals(cityTo, trainsSchedulePage.cityTo, "city to isn't correct")
+
+            assertTrue(
+                trainsSchedulePage.headingText.contains(cityFrom) && trainsSchedulePage.headingText.contains(cityTo),
+                "schedule heading isn't correct"
+            )
+        }
+    }
 }
